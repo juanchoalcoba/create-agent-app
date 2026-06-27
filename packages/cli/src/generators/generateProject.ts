@@ -9,6 +9,7 @@ export async function generateProject(config: AgentConfig) {
   console.log(`\nProject created successfully at ${projectPath}`);
   console.log("Next steps:");
   console.log(`  cd ${config.projectName}`);
+  console.log("  copy .env.example .env");
   console.log("  npm install");
   console.log("  npm run dev\n");
 }

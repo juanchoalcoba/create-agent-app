@@ -39,9 +39,22 @@ export async function collectConfig(): Promise<AgentConfig> {
     ],
   });
 
+  let model: string | undefined;
+
+  if (String(provider) === "ollama") {
+    const ollamaModel = await text({
+      message: "Which local Ollama model do you want to use?",
+      placeholder: "gemma4:latest",
+      initialValue: "gemma4:latest",
+    });
+
+    model = typeof ollamaModel === "string" ? ollamaModel : "gemma4:latest";
+  }
+
   return {
     projectName: String(projectName),
     architecture: String(architecture),
     provider: String(provider),
+    model: model ? String(model) : undefined,
   };
 }

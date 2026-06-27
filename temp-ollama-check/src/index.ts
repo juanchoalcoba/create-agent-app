@@ -1,6 +1,3 @@
-import { createInterface } from "node:readline/promises";
-import process from "node:process";
-import { stdin as input, stdout as output } from "node:process";
 import { createActions } from "./actions/index.js";
 import { buildSystemPrompt } from "./prompts/systemPrompt.js";
 import { createProvider } from "./providers/providerFactory.js";
@@ -14,22 +11,6 @@ import { listTools } from "./tools/index.js";
 import type { MemoryManager } from "./runtime/memoryManager.js";
 import type { AgentState } from "./runtime/state.js";
 import type { ModelProvider } from "./providers/baseProvider.js";
-
-function resolveProviderName() {
-  if (process.env.AGENT_PROVIDER?.trim()) {
-    return process.env.AGENT_PROVIDER.trim();
-  }
-
-  if (process.env.OPENAI_API_KEY) {
-    return "openai";
-  }
-
-  if (process.env.OLLAMA_BASE_URL || process.env.OLLAMA_MODEL) {
-    return "ollama";
-  }
-
-  return "ollama";
-}
 
 export function createAgentBootstrap(providerName = "openai") {
   const tools = listTools();
@@ -55,7 +36,7 @@ export function createAgentBootstrap(providerName = "openai") {
   } as any);
 }
 
-const agent = createAgentBootstrap(resolveProviderName()) as {
+const agent = createAgentBootstrap("openai") as {
   name: string;
   prompt: string;
   tools: Array<{ name: string; description: string }>;
@@ -73,39 +54,23 @@ console.log(`System prompt:\n${agent.prompt}`);
 console.log(`Registered tools: ${agent.tools.map((tool) => tool.name).join(", ")}`);
 console.log(`Registered actions: ${agent.actions.map((action) => action.name).join(", ")}`);
 console.log(`Provider: ${agent.provider.name}`);
-console.log("Type 'exit' to quit.\n");
 
-const rl = createInterface({ input, output });
+const routed = await agent.router.handle("search");
+console.log(`Router result: ${routed.ok ? routed.output : routed.error}`);
 
-try {
-  while (true) {
-    const userInput = (await rl.question("You: ")).trim();
+const orchestrated = await agent.orchestrator.run("search");
+console.log(`Orchestrator result: ${orchestrated.ok ? orchestrated.output : orchestrated.error}`);
 
-    if (!userInput) {
-      continue;
-    }
+appendMemory(agent.state, "router-ran");
+setLastResult(agent.state, orchestrated.output);
+agent.memoryManager.add({ role: "user", content: "search", timestamp: new Date().toISOString() });
+agent.memoryManager.add({ role: "assistant", content: orchestrated.output, timestamp: new Date().toISOString() });
 
-    if (userInput.toLowerCase() === "exit") {
-      break;
-    }
+const promptResponse = await agent.provider.generate("Hello from the agent");
+console.log(`Provider response: ${promptResponse}`);
 
-    const routed = await agent.router.handle(userInput);
-    const orchestrated = await agent.orchestrator.run(userInput);
-    const conversation = await agent.conversationLoop.runTurn(userInput);
-
-    appendMemory(agent.state, userInput);
-    setLastResult(agent.state, orchestrated.ok ? orchestrated.output : orchestrated.error ?? "No result");
-    agent.memoryManager.add({ role: "user", content: userInput, timestamp: new Date().toISOString() });
-    agent.memoryManager.add({ role: "assistant", content: orchestrated.ok ? orchestrated.output : orchestrated.error ?? "No result", timestamp: new Date().toISOString() });
-
-    const promptResponse = await agent.provider.generate(`User: ${userInput}\nRouter: ${routed.ok ? routed.output : routed.error ?? "No result"}\nConversation: ${conversation.result.ok ? conversation.result.output : conversation.result.error ?? "No result"}`);
-
-    console.log(`Assistant: ${promptResponse}`);
-    console.log(`Agent memory: ${agent.state.memory.join(", ")}`);
-    console.log(`Last result: ${agent.state.lastResult}`);
-    console.log(`Short-term memory: ${agent.memoryManager.getShortTerm(2).map((entry: { content: string }) => entry.content).join(", ")}`);
-    console.log();
-  }
-} finally {
-  rl.close();
-}
+const conversation = await agent.conversationLoop.runTurn("calculator");
+console.log(`Conversation turn: ${conversation.result.ok ? conversation.result.output : conversation.result.error}`);
+console.log(`Agent memory: ${agent.state.memory.join(", ")}`);
+console.log(`Last result: ${agent.state.lastResult}`);
+console.log(`Short-term memory: ${agent.memoryManager.getShortTerm(2).map((entry: { content: string }) => entry.content).join(", ")}`);
