@@ -1,0 +1,3 @@
+provider: ollama
+architecture: single-agent
+model: gemma4:latest
