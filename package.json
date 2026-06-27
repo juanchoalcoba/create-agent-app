@@ -1,0 +1,30 @@
+{
+  "name": "create-agent-app",
+  "version": "1.0.0",
+  "description": "CLI to scaffold production-ready AI agent applications with scalable architecture.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juanchoalcoba/create-agent-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/juanchoalcoba/create-agent-app/issues"
+  },
+  "homepage": "https://github.com/juanchoalcoba/create-agent-app#readme",
+  "devDependencies": {
+    "@types/node": "^26.0.1",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}
