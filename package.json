@@ -8,7 +8,7 @@
     "example": "examples"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx packages/cli/src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -26,5 +26,8 @@
     "@types/node": "^26.0.1",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.6.0"
   }
 }
