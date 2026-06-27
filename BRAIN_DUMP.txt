@@ -1,0 +1,134 @@
+CREATE AGENT APP — BRAIN DUMP
+
+CORE STATEMENT
+Create Agent App is a CLI for scaffolding production-ready AI agent architectures.
+
+PRODUCT VISION
+The goal is to help developers create AI agent systems in minutes instead of spending days or weeks building infrastructure from scratch.
+
+TARGET USERS
+
+* AI engineers
+* Indie developers
+* Startups
+* Companies building AI workflows
+
+---
+
+## CLI QUESTIONS
+
+When a developer runs:
+
+npx create-agent-app
+
+The CLI should ask:
+
+1. Project name
+   Example:
+   my-agent
+
+2. Architecture
+   Options:
+
+* Single Agent
+* Multi Agent
+
+3. LLM Provider
+   Options:
+
+* OpenAI
+* Ollama
+* Custom
+
+4. Memory
+   Options:
+
+* None
+* Redis
+* PostgreSQL
+
+5. Tools
+   Options:
+
+* Browser
+* Filesystem
+* Terminal
+* Email
+
+---
+
+## GENERATED PROJECT STRUCTURE
+
+my-agent/
+├── src/
+│   ├── agent/
+│   ├── tools/
+│   ├── memory/
+│   ├── providers/
+│   └── runtime/
+│
+├── .env
+├── agent.config.ts
+├── package.json
+└── README.md
+
+Folder purpose:
+
+agent/
+Contains agent instructions, prompts and behavior.
+
+tools/
+Contains tools the agent can use.
+
+memory/
+Handles memory storage.
+
+providers/
+Connects to LLM providers.
+
+runtime/
+Contains execution engine.
+
+---
+
+## MINIMAL AGENT RUNTIME
+
+The runtime should:
+
+1. Receive a task
+2. Send task to LLM
+3. Decide action/tool
+4. Execute tool
+5. Return response
+
+Flow:
+
+User Task
+↓
+Planner
+↓
+LLM
+↓
+Tool Call
+↓
+Result
+↓
+Final Answer
+
+---
+
+## FUTURE IDEAS
+
+* Multi-agent orchestration
+* Human approval
+* Audit logs
+* Observability dashboard
+* Enterprise deployment
+* Tool permissions
+* Agent monitoring
+
+QUESTIONS / DOUBTS
+
+* Should runtime be included in v1?
+* Should it support browser automation?
+* Should it include templates for common use cases?
