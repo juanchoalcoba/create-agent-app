@@ -1,5 +1,5 @@
 import { text, select } from "@clack/prompts";
-import type { AgentConfig } from "../types/config";
+import type { AgentConfig } from "../types/config.js";
 
 export async function collectConfig(): Promise<AgentConfig> {
   const projectName = await text({
